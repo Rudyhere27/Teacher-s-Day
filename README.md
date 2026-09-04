@@ -28,7 +28,7 @@ Presented with warmth and gratitude by **Jigyasa**.
 ### 🌐 Live Demo
 
 Check out the live website on GitHub Pages:  
-👉 **[https://rudyhere27.github.io/Teacher-s-Day/](https://rudyhere27.github.io/Teacher-s-Day/)**
+👉 **https://rudyhere27.github.io/Teacher-s-Day/**
 
 ---
 
