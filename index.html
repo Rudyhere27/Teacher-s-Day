@@ -140,6 +140,26 @@
     border-color: var(--gold);
   }
 
+  /* ---------- BOTTOM-RIGHT FULLSCREEN BUTTON ---------- */
+  .fullscreen-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 16px;
+    z-index: 999;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: #14201a;
+    color: var(--gold);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  }
+
   /* ---------- SMART-BOARD RESPONSIVE TEXT SIZING ---------- */
   .hero .mark { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--gold); }
   .hero h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; }
@@ -237,6 +257,7 @@
   @media (max-width:520px){ 
     .page-inner{ padding: 24px 18px 90px; } 
     .music-btn{ left: 14px; bottom: 16px; width: 40px; height: 40px; }
+    .fullscreen-btn{ right: 14px; bottom: 16px; width: 40px; height: 40px; }
   }
 </style>
 </head>
@@ -420,6 +441,11 @@
   <span id="musicIcon">🔇</span>
 </button>
 
+<!-- Fullscreen Button -->
+<button id="fsToggle" class="fullscreen-btn" aria-label="Toggle full screen" title="Full Screen">
+  <span>⛶</span>
+</button>
+
 <script>
 /* ====================================================================
    FIREBASE CONFIGURATION
@@ -471,6 +497,18 @@ var firebaseConfig = {
   }, { passive:true });
 
   showPage(0);
+
+  /* ---------------- Fullscreen Toggle ---------------- */
+  var fsBtn = document.getElementById('fsToggle');
+  if (fsBtn){
+    fsBtn.addEventListener('click', function(){
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(function(){});
+      } else {
+        if (document.exitFullscreen) document.exitFullscreen();
+      }
+    });
+  }
 
   /* ---------------- Background Music Toggle ---------------- */
   var audio = document.getElementById('bgMusic');
