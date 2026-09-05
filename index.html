@@ -122,11 +122,11 @@
     position: fixed;
     left: 20px;
     bottom: 16px;
-    z-index: 999;
-    width: 44px;
-    height: 44px;
+    z-index: 9999;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
@@ -134,7 +134,7 @@
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
   }
   .music-btn.playing {
     border-color: var(--gold);
@@ -145,19 +145,20 @@
     position: fixed;
     right: 20px;
     bottom: 16px;
-    z-index: 999;
-    width: 44px;
-    height: 44px;
+    z-index: 9999;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    font-size: 1.4rem;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    line-height: 1;
   }
 
   /* ---------- SMART-BOARD RESPONSIVE TEXT SIZING ---------- */
@@ -256,8 +257,8 @@
 
   @media (max-width:520px){ 
     .page-inner{ padding: 24px 18px 90px; } 
-    .music-btn{ left: 14px; bottom: 16px; width: 40px; height: 40px; }
-    .fullscreen-btn{ right: 14px; bottom: 16px; width: 40px; height: 40px; }
+    .music-btn{ left: 14px; bottom: 16px; width: 42px; height: 42px; }
+    .fullscreen-btn{ right: 14px; bottom: 16px; width: 42px; height: 42px; }
   }
 </style>
 </head>
@@ -441,9 +442,9 @@
   <span id="musicIcon">🔇</span>
 </button>
 
-<!-- Fullscreen Button -->
+<!-- Bottom-Right Fullscreen Button -->
 <button id="fsToggle" class="fullscreen-btn" aria-label="Toggle full screen" title="Full Screen">
-  <span>⛶</span>
+  <span>&#x26F6;</span>
 </button>
 
 <script>
@@ -498,14 +499,34 @@ var firebaseConfig = {
 
   showPage(0);
 
-  /* ---------------- Fullscreen Toggle ---------------- */
+  /* ---------------- Fullscreen Cross-Platform Engine ---------------- */
   var fsBtn = document.getElementById('fsToggle');
   if (fsBtn){
     fsBtn.addEventListener('click', function(){
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(function(){});
+      var doc = document;
+      var docEl = document.documentElement;
+      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+
+      if (!isFS) {
+        if (docEl.requestFullscreen) {
+          docEl.requestFullscreen();
+        } else if (docEl.webkitRequestFullscreen) {
+          docEl.webkitRequestFullscreen();
+        } else if (docEl.mozRequestFullScreen) {
+          docEl.mozRequestFullScreen();
+        } else if (docEl.msRequestFullscreen) {
+          docEl.msRequestFullscreen();
+        }
       } else {
-        if (document.exitFullscreen) document.exitFullscreen();
+        if (doc.exitFullscreen) {
+          doc.exitFullscreen();
+        } else if (doc.webkitExitFullscreen) {
+          doc.webkitExitFullscreen();
+        } else if (doc.mozCancelFullScreen) {
+          doc.mozCancelFullScreen();
+        } else if (doc.msExitFullscreen) {
+          doc.msExitFullscreen();
+        }
       }
     });
   }
