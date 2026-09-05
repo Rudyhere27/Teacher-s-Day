@@ -37,6 +37,7 @@
 
   h1,h2,h3 { font-family: 'Caveat', cursive; font-weight: 700; color: var(--chalk); }
 
+  /* ---------- HARDWARE-FRIENDLY SLIDE ENGINE ---------- */
   .book {
     position: relative;
     width: 100vw;
@@ -89,7 +90,7 @@
     left: 50%;
     bottom: 16px;
     transform: translateX(-50%);
-    z-index: 999;
+    z-index: 9999;
     display: flex;
     align-items: center;
     gap: 16px;
@@ -125,20 +126,20 @@
     text-align: center;
   }
 
-  /* ---------- BOTTOM CORNER CONTROLS ---------- */
+  /* ---------- BOTTOM-LEFT MUSIC TOGGLE BUTTON ---------- */
   .music-btn {
-    position: fixed;
-    left: 20px;
-    bottom: 16px;
-    z-index: 9999;
-    width: 44px;
-    height: 44px;
+    position: fixed !important;
+    left: 20px !important;
+    bottom: 16px !important;
+    z-index: 99999 !important;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
@@ -148,30 +149,33 @@
     border-color: var(--gold);
   }
 
+  /* ---------- BOTTOM-RIGHT FULLSCREEN BUTTON ---------- */
   .fullscreen-btn {
-    position: fixed;
-    right: 20px;
-    bottom: 16px;
-    z-index: 9999;
-    width: 44px;
-    height: 44px;
+    position: fixed !important;
+    right: 20px !important;
+    bottom: 16px !important;
+    z-index: 99999 !important;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    padding: 0;
   }
   .fullscreen-btn svg {
     width: 22px;
     height: 22px;
     fill: var(--gold);
+    pointer-events: none;
   }
 
-  /* ---------- RESPONSIVE TEXT SIZING ---------- */
+  /* ---------- SMART-BOARD RESPONSIVE TEXT SIZING ---------- */
   .hero .mark { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--gold); }
   .hero h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; }
   .hero h1 span { display: inline-block; }
@@ -202,7 +206,7 @@
   .litany-line { font-size: clamp(1rem, 1.9vw, 1.25rem); margin-bottom: 12px; }
   .litany-line em { color: var(--gold); font-style: normal; }
 
-  /* ---------- TEACHER PAGES ---------- */
+  /* ---------- TEACHER PAGES (AUTO-FIT TO SCREEN HEIGHT) ---------- */
   .teacher-page .wrap {
     display: flex;
     flex-direction: column;
@@ -226,7 +230,7 @@
   .photo-frame.wide {
     aspect-ratio: 4/3;
   }
-  .photo-frame img {
+  .photo-frame img, .photo-frame video {
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -268,8 +272,8 @@
   @media (max-width:520px){ 
     .page-inner{ padding: 24px 18px 90px; } 
     .page-slide[data-page="closing"] .page-inner { padding-bottom: 140px; }
-    .music-btn{ left: 14px; bottom: 16px; width: 40px; height: 40px; }
-    .fullscreen-btn{ right: 14px; bottom: 16px; width: 40px; height: 40px; }
+    .music-btn{ left: 14px !important; bottom: 16px !important; width: 42px; height: 42px; }
+    .fullscreen-btn{ right: 14px !important; bottom: 16px !important; width: 42px; height: 42px; }
   }
 </style>
 </head>
@@ -435,12 +439,26 @@
     </div></div>
   </section>
 
+  <!-- 13: NEW FINAL SLIDE (CAT DANCE MEME) -->
+  <section class="page-slide teacher-page" data-page="bonusvideo">
+    <div class="page-inner"><div class="wrap">
+      <div class="teacher-eyebrow">one last thing...</div>
+      <div class="photo-frame wide pos-middle" style="background:#000;">
+        <video id="bonusCatVideo" loop playsinline preload="auto">
+          <source src="images/cat-dance.mp4" type="video/mp4">
+        </video>
+      </div>
+      <h2 class="teacher-name">Happy Teacher's Day! 🎉</h2>
+      <p class="teacher-line">From all the chaotic students you somehow survived teaching this year!</p>
+    </div></div>
+  </section>
+
 </div>
 
 <!-- Navigation Bar -->
 <div class="nav-bar">
   <button id="prevBtn" aria-label="Previous page">‹</button>
-  <span class="counter" id="counter">01 / 12</span>
+  <span class="counter" id="counter">01 / 13</span>
   <button id="nextBtn" aria-label="Next page">›</button>
 </div>
 
@@ -455,7 +473,7 @@
 
 <!-- Bottom-Right Fullscreen Button -->
 <button id="fsToggle" class="fullscreen-btn" aria-label="Toggle full screen" title="Full Screen">
-  <svg viewBox="0 0 24 24">
+  <svg viewBox="0 0 24 24" width="22" height="22">
     <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
   </svg>
 </button>
@@ -482,15 +500,27 @@ var firebaseConfig = {
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
   var counter = document.getElementById('counter');
+  var bonusVideo = document.getElementById('bonusCatVideo');
 
   function showPage(index){
     if (index < 0 || index >= total) return;
     pages[current].classList.remove('active');
+    
+    // Auto handle video vs background music
+    if (pages[current].dataset.page === 'bonusvideo' && bonusVideo){
+      bonusVideo.pause();
+    }
+
     current = index;
     pages[current].classList.add('active');
     counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
     prevBtn.disabled = (current === 0);
     nextBtn.disabled = (current === total - 1);
+
+    if (pages[current].dataset.page === 'bonusvideo' && bonusVideo){
+      bonusVideo.currentTime = 0;
+      bonusVideo.play().catch(function(){});
+    }
   }
 
   prevBtn.addEventListener('click', function(){ showPage(current - 1); });
@@ -515,7 +545,8 @@ var firebaseConfig = {
   /* ---------------- Fullscreen Cross-Platform Engine ---------------- */
   var fsBtn = document.getElementById('fsToggle');
   if (fsBtn){
-    fsBtn.addEventListener('click', function(){
+    fsBtn.addEventListener('click', function(e){
+      e.stopPropagation();
       var doc = document;
       var docEl = document.documentElement;
       var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
@@ -579,7 +610,7 @@ var firebaseConfig = {
   var cachedNotes = [];
 
   var permanentNote = {
-    from: 'Jigyasa Dev',
+    from: 'Jigyasa',
     text: "To Shreya ma'am , thankyou for being my cheerleader and supporter🫶🏻"
   };
 
