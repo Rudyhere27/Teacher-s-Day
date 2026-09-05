@@ -37,7 +37,6 @@
 
   h1,h2,h3 { font-family: 'Caveat', cursive; font-weight: 700; color: var(--chalk); }
 
-  /* ---------- HARDWARE-FRIENDLY SLIDE ENGINE ---------- */
   .book {
     position: relative;
     width: 100vw;
@@ -66,11 +65,20 @@
     z-index: 10;
   }
 
+  .page-slide[data-page="closing"].active {
+    justify-content: flex-start;
+  }
+
   .page-inner {
     width: 100%;
     max-width: 820px;
     padding: 24px 28px 96px;
     margin: auto;
+  }
+
+  .page-slide[data-page="closing"] .page-inner {
+    padding-top: 20px;
+    padding-bottom: 140px;
   }
 
   .wrap { width: 100%; }
@@ -117,16 +125,16 @@
     text-align: center;
   }
 
-  /* ---------- BOTTOM-LEFT MUSIC TOGGLE BUTTON ---------- */
+  /* ---------- BOTTOM CORNER CONTROLS ---------- */
   .music-btn {
     position: fixed;
     left: 20px;
     bottom: 16px;
     z-index: 9999;
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
@@ -134,34 +142,36 @@
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
   }
   .music-btn.playing {
     border-color: var(--gold);
   }
 
-  /* ---------- BOTTOM-RIGHT FULLSCREEN BUTTON ---------- */
   .fullscreen-btn {
     position: fixed;
     right: 20px;
     bottom: 16px;
     z-index: 9999;
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
+    border: 1px solid rgba(255,255,255,0.2);
     background: #14201a;
     color: var(--gold);
     cursor: pointer;
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.7);
-    line-height: 1;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  }
+  .fullscreen-btn svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--gold);
   }
 
-  /* ---------- SMART-BOARD RESPONSIVE TEXT SIZING ---------- */
+  /* ---------- RESPONSIVE TEXT SIZING ---------- */
   .hero .mark { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--gold); }
   .hero h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; }
   .hero h1 span { display: inline-block; }
@@ -192,7 +202,7 @@
   .litany-line { font-size: clamp(1rem, 1.9vw, 1.25rem); margin-bottom: 12px; }
   .litany-line em { color: var(--gold); font-style: normal; }
 
-  /* ---------- TEACHER PAGES (AUTO-FIT TO SCREEN HEIGHT) ---------- */
+  /* ---------- TEACHER PAGES ---------- */
   .teacher-page .wrap {
     display: flex;
     flex-direction: column;
@@ -250,15 +260,16 @@
 
   .cork-expand-card { border: 2px dashed rgba(242,236,217,0.4); background: rgba(255,255,255,0.05); border-radius: 4px; min-height: 95px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1.15rem; text-align: center; color: var(--chalk); }
 
-  .closing { text-align: left; margin-top: 24px; }
+  .closing { text-align: left; margin-top: 24px; padding-bottom: 24px; }
   .closing p { font-size: clamp(0.95rem, 1.8vw, 1.12rem); }
-  .signature { margin-top: 8px; font-family: 'Caveat', cursive; font-size: 2rem; color: var(--gold); }
+  .signature { margin-top: 8px; font-family: 'Caveat', cursive; font-size: 2rem; color: var(--gold); margin-bottom: 16px; }
   .heart-svg path { fill: none; stroke: var(--pink); stroke-width: 4; }
 
   @media (max-width:520px){ 
     .page-inner{ padding: 24px 18px 90px; } 
-    .music-btn{ left: 14px; bottom: 16px; width: 42px; height: 42px; }
-    .fullscreen-btn{ right: 14px; bottom: 16px; width: 42px; height: 42px; }
+    .page-slide[data-page="closing"] .page-inner { padding-bottom: 140px; }
+    .music-btn{ left: 14px; bottom: 16px; width: 40px; height: 40px; }
+    .fullscreen-btn{ right: 14px; bottom: 16px; width: 40px; height: 40px; }
   }
 </style>
 </head>
@@ -444,7 +455,9 @@
 
 <!-- Bottom-Right Fullscreen Button -->
 <button id="fsToggle" class="fullscreen-btn" aria-label="Toggle full screen" title="Full Screen">
-  <span>&#x26F6;</span>
+  <svg viewBox="0 0 24 24">
+    <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+  </svg>
 </button>
 
 <script>
