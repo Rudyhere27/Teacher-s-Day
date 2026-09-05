@@ -24,126 +24,135 @@
     --pink: #d99089;
   }
 
-  *{ box-sizing:border-box; margin:0; padding:0; }
-  html, body {
-    height: 100%;
-    width: 100%;
-    overflow: hidden;
-    background: var(--bg);
-    color: var(--chalk);
-    font-family: 'Zilla Slab', serif;
-    line-height: 1.4;
+  *{box-sizing:border-box;}
+  html,body{height:100%; margin:0;}
+
+  body{
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(ellipse at 80% 90%, rgba(255,255,255,0.025), transparent 45%),
+      var(--bg);
+    color:var(--chalk);
+    font-family:'Zilla Slab', serif;
+    line-height:1.6;
+    overflow:hidden;
   }
 
-  h1,h2,h3 { font-family: 'Caveat', cursive; font-weight: 700; color: var(--chalk); }
-
-  /* ---------- HARDWARE-FRIENDLY SLIDE ENGINE ---------- */
-  .book {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; opacity:0.05; z-index:5;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  .page-slide {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    display: none;
-    opacity: 0;
-    background: var(--bg);
-  }
+  h1,h2,h3{ font-family:'Caveat', cursive; font-weight:700; margin:0; color:var(--chalk); }
 
-  .page-slide.active {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 1;
-    z-index: 10;
-  }
+  .dust{ position:fixed; inset:0; pointer-events:none; z-index:1; overflow:hidden; }
+  .dust span{ position:absolute; width:3px; height:3px; border-radius:50%; background:rgba(242,236,217,0.35); animation:drift 14s linear infinite; }
+  .dust span:nth-child(1){ left:8%; animation-delay:0s; }
+  .dust span:nth-child(2){ left:22%; animation-delay:3s; }
+  .dust span:nth-child(3){ left:41%; animation-delay:6s; }
+  .dust span:nth-child(4){ left:63%; animation-delay:1.5s; }
+  .dust span:nth-child(5){ left:78%; animation-delay:8s; }
+  .dust span:nth-child(6){ left:90%; animation-delay:5s; }
+  @keyframes drift{ 0%{ transform:translateY(0) translateX(0); opacity:0; top:100%; } 10%{ opacity:0.5; } 90%{ opacity:0.3; } 100%{ transform:translateY(-100vh) translateX(20px); opacity:0; top:100%; } }
 
-  .page-slide[data-page="closing"].active {
-    justify-content: flex-start;
+  /* ---------- BOOK / PAGE MECHANICS (ORIGINAL 3D) ---------- */
+  .book{
+    position:relative;
+    height:100vh;
+    perspective:2200px;
+    z-index:2;
   }
-
-  .page-inner {
-    width: 100%;
-    max-width: 820px;
-    padding: 24px 28px 96px;
-    margin: auto;
+  .page-slide{
+    position:absolute;
+    inset:0;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    backface-visibility:hidden;
+    -webkit-backface-visibility:hidden;
+    transform-origin:left center;
+    transform:rotateY(0deg);
+    transition:transform 0.65s cubic-bezier(.45,.05,.35,1), box-shadow 0.65s ease;
+    will-change:transform;
+    background:
+      radial-gradient(ellipse at 20% 10%, rgba(255,255,255,0.03), transparent 40%),
+      radial-gradient(ellipse at 80% 90%, rgba(255,255,255,0.025), transparent 45%),
+      var(--bg);
   }
-
-  .page-slide[data-page="closing"] .page-inner {
-    padding-top: 20px;
-    padding-bottom: 140px;
+  .page-slide.turning{ box-shadow:-40px 0 60px rgba(0,0,0,0.55); }
+  .page-inner{
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    padding:56px 0 90px;
   }
-
-  .wrap { width: 100%; }
+  .wrap{ max-width:700px; margin:0 auto; padding:0 28px; width:100%; }
 
   /* ---------- BOTTOM NAVIGATION BAR ---------- */
-  .nav-bar {
-    position: fixed;
-    left: 50%;
-    bottom: 16px;
-    transform: translateX(-50%);
-    z-index: 9999;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    background: #14201a;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 999px;
-    padding: 6px 14px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  .nav-bar{
+    position:fixed;
+    left:50%; bottom:20px;
+    transform:translateX(-50%);
+    z-index:60;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:rgba(20,32,26,0.85);
+    backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:999px;
+    padding:8px 14px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.4);
   }
-
-  .nav-bar button {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 1px solid rgba(255,255,255,0.2);
-    background: rgba(255,255,255,0.08);
-    color: var(--gold);
-    font-family: 'Caveat', cursive;
-    font-size: 1.6rem;
-    line-height: 1;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .nav-bar button{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.15);
+    background:rgba(255,255,255,0.05);
+    color:var(--gold);
+    font-family:'Caveat', cursive;
+    font-size:1.5rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:background 0.2s ease, transform 0.15s ease;
   }
-  .nav-bar button:disabled { opacity: 0.3; }
-
-  .nav-bar .counter {
-    font-family: 'Caveat', cursive;
-    font-size: 1.25rem;
-    color: var(--chalk-dim);
-    min-width: 70px;
-    text-align: center;
+  .nav-bar button:hover:not(:disabled){ background:rgba(230,176,76,0.2); transform:translateY(-1px); }
+  .nav-bar button:disabled{ opacity:0.3; cursor:default; }
+  .nav-bar .counter{
+    font-family:'Caveat', cursive;
+    font-size:1.2rem;
+    color:var(--chalk-dim);
+    min-width:68px;
+    text-align:center;
+    letter-spacing:0.5px;
   }
 
   /* ---------- BOTTOM-LEFT MUSIC TOGGLE BUTTON ---------- */
   .music-btn {
-    position: fixed !important;
-    left: 20px !important;
-    bottom: 16px !important;
-    z-index: 99999 !important;
-    width: 46px;
-    height: 46px;
+    position: fixed;
+    left: 24px;
+    bottom: 20px;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
-    background: #14201a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(20, 32, 26, 0.85);
+    backdrop-filter: blur(8px);
     color: var(--gold);
     cursor: pointer;
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+  }
+  .music-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(230, 176, 76, 0.2);
   }
   .music-btn.playing {
     border-color: var(--gold);
@@ -151,142 +160,246 @@
 
   /* ---------- BOTTOM-RIGHT FULLSCREEN BUTTON ---------- */
   .fullscreen-btn {
-    position: fixed !important;
-    right: 20px !important;
-    bottom: 16px !important;
-    z-index: 99999 !important;
-    width: 46px;
-    height: 46px;
+    position: fixed;
+    right: 24px;
+    bottom: 20px;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.3);
-    background: #14201a;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(20, 32, 26, 0.85);
+    backdrop-filter: blur(8px);
     color: var(--gold);
     cursor: pointer;
-    display: flex !important;
+    display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-    padding: 0;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  .fullscreen-btn:hover {
+    transform: translateY(-2px);
+    background: rgba(230, 176, 76, 0.2);
   }
   .fullscreen-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 20px;
+    height: 20px;
     fill: var(--gold);
     pointer-events: none;
   }
 
-  /* ---------- SMART-BOARD RESPONSIVE TEXT SIZING ---------- */
-  .hero .mark { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--gold); }
-  .hero h1 { font-size: clamp(2.4rem, 5.5vw, 4.2rem); line-height: 1.05; }
-  .hero h1 span { display: inline-block; }
-  .hero h1 span.two { color: var(--gold); margin-left: 8px; }
-  .underline-svg { display: block; width: min(340px, 60vw); height: 18px; margin-top: 4px; }
-  .underline-svg path { fill: none; stroke: var(--gold); stroke-width: 4; }
-  .hero p.sub { font-size: clamp(0.95rem, 1.8vw, 1.15rem); color: var(--chalk-dim); margin-top: 14px; max-width: 60ch; }
-  .hero .byline { margin-top: 12px; font-family: 'Caveat', cursive; font-size: 1.3rem; color: var(--blue); }
-  .hero .next-hint { margin-top: 18px; font-family: 'Caveat', cursive; font-size: 1.1rem; color: var(--chalk-dim); }
+  /* ---------- PAGE 1: HERO ---------- */
+  .hero .mark{ font-family:'Caveat', cursive; font-size:1.15rem; color:var(--gold); opacity:0; animation:riseIn 0.8s ease-out 0.2s forwards; }
+  .hero h1{ font-size:clamp(3.2rem, 11vw, 6.4rem); line-height:0.98; letter-spacing:0.5px; opacity:0; animation:riseIn 0.9s ease-out 0.5s forwards; }
+  .hero h1 span{display:block;}
+  .hero h1 span.two{color:var(--gold);}
+  .underline-svg{ display:block; width:min(420px, 70vw); margin-top:2px; opacity:0; animation:fadeOnly 0.4s ease-out 1.3s forwards; }
+  .underline-svg path{ fill:none; stroke:var(--gold); stroke-width:5; stroke-linecap:round; stroke-dasharray:600; stroke-dashoffset:600; animation:draw 1s ease-out 1.35s forwards; }
+  .hero p.sub{ max-width:46ch; font-size:1.15rem; color:var(--chalk-dim); margin-top:26px; opacity:0; animation:riseIn 0.9s ease-out 1.7s forwards; }
+  .hero .byline{ margin-top:14px; font-family:'Caveat', cursive; font-size:1.2rem; color:var(--blue); opacity:0; animation:riseIn 0.9s ease-out 2s forwards; }
+  .hero .next-hint{ margin-top:40px; font-family:'Caveat', cursive; font-size:1.05rem; color:var(--chalk-dim); opacity:0; animation:riseIn 0.8s ease-out 2.3s forwards; }
 
-  .essay h2 { font-size: clamp(2rem, 4.2vw, 2.7rem); margin-bottom: 10px; color: var(--gold); }
-  .essay p { font-size: clamp(0.95rem, 1.8vw, 1.15rem); color: var(--chalk); margin-bottom: 8px; }
-  .marginalia { font-family: 'Caveat', cursive; font-size: 1.3rem; color: var(--pink); margin: 6px 0 10px; display: block; }
-  .marginalia.blue { color: var(--blue); }
+  @keyframes riseIn{ from{opacity:0; transform:translateY(14px);} to{opacity:1; transform:translateY(0);} }
+  @keyframes fadeOnly{ to{opacity:1;} }
+  @keyframes draw{ to{stroke-dashoffset:0;} }
 
-  .moments h2 { font-size: clamp(2rem, 4.2vw, 2.7rem); color: var(--gold); margin-bottom: 12px; }
-  .moment-row { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 10px; font-size: clamp(0.92rem, 1.7vw, 1.1rem); }
-  .moment-num { font-family: 'Caveat', cursive; font-size: 1.4rem; color: var(--blue); min-width: 22px; }
+  /* ---------- PAGE 2: ESSAY ---------- */
+  .essay h2{ font-size:clamp(2.2rem, 6vw, 3rem); margin-bottom:22px; color:var(--gold); }
+  .essay p{ font-size:1.12rem; color:var(--chalk); max-width:62ch; clip-path:inset(0 0 0 100%); opacity:0; }
+  .page-slide[data-page="essay"].active .essay p{ animation:wipeReveal 0.9s ease forwards; }
+  .page-slide[data-page="essay"].active .essay p.p2{ animation-delay:0.25s; }
+  .marginalia{ font-family:'Caveat', cursive; font-size:1.4rem; color:var(--pink); margin:26px 0 26px 8px; display:inline-block; opacity:0; transform:translateX(24px) rotate(0deg); }
+  .page-slide[data-page="essay"].active .marginalia.m1{ animation:slideRotateIn 0.6s ease 0.55s forwards; --rot:-2deg; }
+  .marginalia.blue{ color:var(--blue); }
+  .page-slide[data-page="essay"].active .marginalia.m2{ animation:slideRotateIn 0.6s ease 1.35s forwards; --rot:1.5deg; }
+  @keyframes wipeReveal{ to{ clip-path:inset(0 0 0 0%); opacity:1; } }
+  @keyframes slideRotateIn{ to{ opacity:1; transform:translateX(0) rotate(var(--rot)); } }
 
-  .board { background: var(--board); border: 8px solid var(--board-edge); border-radius: 4px; padding: 24px 20px; }
-  .board .eq { font-family: 'Caveat', cursive; font-size: clamp(1.25rem, 2.8vw, 1.9rem); line-height: 1.6; }
-  .board .eq .term1 { color: var(--gold); }
-  .board .eq .term2 { color: var(--blue); }
-  .board .eq .term3 { color: var(--pink); }
-  .board .eq .result { display: block; margin-top: 8px; font-size: clamp(1.5rem, 3.4vw, 2.3rem); border-top: 2px dashed rgba(242,236,217,0.35); padding-top: 10px; }
+  /* ---------- PAGE 3: MOMENTS ---------- */
+  .moments h2{ font-size:clamp(2.2rem, 6vw, 3rem); color:var(--gold); margin-bottom:34px; }
+  .moment-row{ display:flex; align-items:baseline; gap:18px; margin-bottom:26px; opacity:0; transform:translateX(-18px); }
+  .page-slide[data-page="moments"].active .moment-row{ animation:rowIn 0.55s ease forwards; }
+  .page-slide[data-page="moments"].active .moment-row:nth-child(2){ animation-delay:0.15s; }
+  .page-slide[data-page="moments"].active .moment-row:nth-child(3){ animation-delay:0.45s; }
+  .page-slide[data-page="moments"].active .moment-row:nth-child(4){ animation-delay:0.75s; }
+  @keyframes rowIn{ to{ opacity:1; transform:translateX(0); } }
+  .moment-num{ font-family:'Caveat', cursive; font-size:1.6rem; color:var(--blue); min-width:28px; }
+  .moment-row p{ margin:0; font-size:1.08rem; color:var(--chalk); max-width:56ch; }
 
-  .litany h2 { font-size: clamp(2rem, 4.2vw, 2.7rem); color: var(--gold); margin-bottom: 14px; }
-  .litany-line { font-size: clamp(1rem, 1.9vw, 1.25rem); margin-bottom: 12px; }
-  .litany-line em { color: var(--gold); font-style: normal; }
+  /* ---------- PAGE 4: BLACKBOARD ---------- */
+  .board{ background: linear-gradient(rgba(0,0,0,0.08), rgba(0,0,0,0.08)), var(--board); border:10px solid var(--board-edge); border-radius:4px; padding:40px 30px; box-shadow: inset 0 0 60px rgba(0,0,0,0.35), 0 18px 40px rgba(0,0,0,0.35); }
+  .board .eq{ font-family:'Caveat', cursive; font-size:clamp(1.4rem, 4.2vw, 2.1rem); line-height:1.9; color:var(--chalk); }
+  .board .eq span{ opacity:0; transform:translateY(10px); display:inline-block; }
+  .page-slide[data-page="equation"].active .board .eq span{ animation:termIn 0.5s ease forwards; }
+  .page-slide[data-page="equation"].active .board .eq span.term1{ animation-delay:0.2s; }
+  .page-slide[data-page="equation"].active .board .eq span.term2{ animation-delay:0.9s; }
+  .page-slide[data-page="equation"].active .board .eq span.term3{ animation-delay:1.6s; }
+  .board .eq .term1{color:var(--gold);}
+  .board .eq .term2{color:var(--blue);}
+  .board .eq .term3{color:var(--pink);}
+  .board .eq .result{ display:block; margin-top:10px; font-size:clamp(1.8rem, 5vw, 2.6rem); color:var(--chalk); border-top:2px dashed rgba(242,236,217,0.35); padding-top:14px; opacity:0; transform:scale(0.85); }
+  .page-slide[data-page="equation"].active .board .eq .result{ animation:resultPop 0.5s cubic-bezier(.2,1.4,.4,1) 2.3s forwards; }
+  @keyframes termIn{ to{opacity:1; transform:translateY(0);} }
+  @keyframes resultPop{ to{opacity:1; transform:scale(1);} }
 
-  /* ---------- TEACHER PAGES (AUTO-FIT TO SCREEN HEIGHT) ---------- */
-  .teacher-page .wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  /* ---------- PAGE 5: LITANY ---------- */
+  .litany h2{ font-size:clamp(2.2rem, 6vw, 3rem); color:var(--gold); margin-bottom:28px; }
+  .litany-line{ font-size:1.26rem; color:var(--chalk); max-width:58ch; margin:0 0 20px 0; clip-path:inset(0 0 0 100%); opacity:0; }
+  .page-slide[data-page="litany"].active .litany-line{ animation:wipeReveal 0.8s ease forwards; }
+  .page-slide[data-page="litany"].active .litany-line:nth-child(2){ animation-delay:0.35s; }
+  .page-slide[data-page="litany"].active .litany-line:nth-child(3){ animation-delay:0.9s; }
+  .page-slide[data-page="litany"].active .litany-line:nth-child(4){ animation-delay:1.45s; }
+  .litany-line em{ color:var(--gold); font-style:normal; }
+
+  /* ---------- PAGES 6-11, 13: TEACHERS & VIDEO ---------- */
+  .teacher-page .wrap{ display:flex; flex-direction:column; align-items:flex-start; }
+  .teacher-eyebrow{ font-family:'Caveat', cursive; font-size:1.2rem; color:var(--blue); opacity:0; }
+  .photo-frame{
+    width:min(280px, 68vw);
+    aspect-ratio:3/4;
+    margin-top:14px;
+    border:8px solid var(--board-edge);
+    background:var(--board);
+    border-radius:4px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.4);
+    overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    transform:scale(0.92);
+    opacity:0;
   }
-  .teacher-eyebrow { font-family: 'Caveat', cursive; font-size: 1.2rem; color: var(--blue); }
-
-  .photo-frame {
-    height: 40vh;
-    max-height: 310px;
-    width: auto;
-    aspect-ratio: 3/4;
-    margin: 8px auto;
-    border: 6px solid var(--board-edge);
-    background: var(--board);
-    border-radius: 4px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    overflow: hidden;
+  .photo-frame.wide{
+    width:min(340px, 82vw);
+    aspect-ratio:4/3;
   }
-  .photo-frame.wide {
-    aspect-ratio: 4/3;
+  .photo-frame img, .photo-frame video{
+    width:100%; height:100%;
+    object-fit:cover;
+    display:block;
   }
-  .photo-frame img, .photo-frame video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+  .photo-frame.pos-top img{ object-position:top center; }
+  .photo-frame.pos-center img{ object-position:center 20%; }
+  .photo-frame.pos-middle img{ object-position:center center; }
+
+  .photo-frame.missing img{ display:none; }
+  .photo-frame .placeholder-note{
+    display:none;
+    font-family:'Zilla Slab', serif;
+    font-size:0.9rem;
+    color:var(--chalk-dim);
+    text-align:center;
+    padding:16px;
   }
-  .photo-frame.pos-top img { object-position: top center; }
-  .photo-frame.pos-center img { object-position: center 20%; }
-  .photo-frame.pos-middle img { object-position: center center; }
+  .photo-frame.missing .placeholder-note{ display:block; }
+  .teacher-name{ margin-top:22px; font-size:clamp(2rem, 6vw, 2.8rem); color:var(--gold); opacity:0; }
+  .teacher-line{ margin-top:8px; font-size:1.1rem; color:var(--chalk); max-width:52ch; opacity:0; }
 
-  .teacher-name { margin-top: 8px; font-size: clamp(1.7rem, 3.5vw, 2.3rem); color: var(--gold); }
-  .teacher-line { margin-top: 4px; font-size: clamp(0.92rem, 1.6vw, 1.08rem); max-width: 58ch; color: var(--chalk); }
+  .teacher-page.active .teacher-eyebrow{ animation:riseIn 0.6s ease 0.1s forwards; }
+  .teacher-page.active .photo-frame{ animation:photoIn 0.7s ease 0.3s forwards; }
+  .teacher-page.active .teacher-name{ animation:riseIn 0.6s ease 0.8s forwards; }
+  .teacher-page.active .teacher-line{ animation:riseIn 0.6s ease 1.05s forwards; }
+  @keyframes photoIn{ to{ opacity:1; transform:scale(1); } }
 
-  /* ---------- CORKBOARD & CLOSING ---------- */
-  .cork-intro h2 { font-size: clamp(1.9rem, 3.8vw, 2.5rem); color: var(--gold); margin-bottom: 4px; }
-  .cork-intro p { font-size: 0.95rem; color: var(--chalk-dim); margin-bottom: 8px; }
-  .live-badge { display: inline-flex; align-items: center; gap: 6px; font-family: 'Caveat', cursive; font-size: 1.05rem; color: var(--chalk-dim); margin-bottom: 12px; }
-  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #7fd08a; }
+  /* ---------- PAGE 12: PINBOARD & CLOSING ---------- */
+  .cork-intro h2{ font-size:clamp(2.2rem, 6vw, 3rem); color:var(--gold); margin-bottom:10px; }
+  .cork-intro p{ color:var(--chalk-dim); margin-bottom:20px; max-width:56ch;}
+  .live-badge{ display:inline-flex; align-items:center; gap:7px; font-family:'Caveat', cursive; font-size:1.05rem; color:var(--chalk-dim); margin-bottom:22px; }
+  .live-dot{ width:8px; height:8px; border-radius:50%; background:var(--chalk-dim); }
+  .live-badge.on .live-dot{ background:#7fd08a; box-shadow:0 0 6px #7fd08a; }
+  .live-badge.on{ color:#a9e0ae; }
 
-  .note-form { display: flex; flex-direction: column; gap: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 14px; margin-bottom: 16px; }
-  .note-form input, .note-form textarea { font-family: 'Zilla Slab', serif; font-size: 0.95rem; background: var(--bg-deep); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; color: var(--chalk); padding: 8px 10px; }
-  .note-form textarea { min-height: 55px; resize: none; }
-  .note-form button { align-self: flex-start; font-family: 'Caveat', cursive; font-size: 1.2rem; font-weight: 700; background: var(--gold); color: #28210c; border: none; border-radius: 4px; padding: 6px 20px; cursor: pointer; }
-  .form-status { font-family: 'Caveat', cursive; font-size: 1rem; color: var(--chalk-dim); }
+  .note-form{ display:flex; flex-direction:column; gap:12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:22px; margin-bottom:34px; }
+  .note-form input, .note-form textarea{ font-family:'Zilla Slab', serif; font-size:1rem; background:var(--bg-deep); border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:var(--chalk); padding:12px 14px; resize:vertical; }
+  .note-form textarea{min-height:80px;}
+  .note-form input::placeholder, .note-form textarea::placeholder{color:rgba(242,236,217,0.4);}
+  .note-form button{ align-self:flex-start; font-family:'Caveat', cursive; font-size:1.3rem; font-weight:700; background:var(--gold); color:#28210c; border:none; border-radius:6px; padding:10px 26px; cursor:pointer; transition:transform 0.15s ease; }
+  .note-form button:hover{transform:translateY(-2px);}
+  .note-form button:active{transform:translateY(0);}
+  .note-form button:disabled{opacity:0.6; cursor:default; transform:none;}
+  .form-status{ font-family:'Caveat', cursive; font-size:1.1rem; color:var(--chalk-dim); min-height:1.4em; }
 
-  .corkboard { background: #3a2a1d; border: 8px solid #2a1d13; border-radius: 6px; padding: 14px; display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 14px; }
-  .sticky { background: var(--gold); color: #2b220c; font-family: 'Caveat', cursive; font-size: 1.1rem; line-height: 1.3; padding: 12px 10px; border-radius: 2px; min-height: 95px; }
-  .sticky.c2 { background: var(--pink); color: #2e1512; }
-  .sticky.c3 { background: var(--blue); color: #101d2b; }
-  .sticky.c4 { background: var(--chalk); color: #28210c; }
-  .sticky .from { display: block; margin-top: 6px; font-size: 0.9rem; opacity: 0.8; }
+  .corkboard{
+    background:#3a2a1d;
+    border:10px solid #2a1d13;
+    border-radius:6px;
+    padding:24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(150px, 1fr));
+    gap:16px;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.4);
+    margin-bottom:20px;
+  }
+  .sticky{ background:var(--gold); color:#2b220c; font-family:'Caveat', cursive; font-size:1.15rem; line-height:1.35; padding:16px 14px 14px; border-radius:2px; box-shadow:0 6px 14px rgba(0,0,0,0.35); position:relative; min-height:110px; opacity:0; animation:flutterIn 0.5s ease forwards; }
+  .sticky.c2{background:var(--pink); color:#2e1512;}
+  .sticky.c3{background:var(--blue); color:#101d2b;}
+  .sticky.c4{background:var(--chalk); color:#28210c;}
+  .sticky::before{ content:""; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:14px; height:14px; border-radius:50%; background:#8a8a8a; box-shadow:0 2px 3px rgba(0,0,0,0.4); }
+  .sticky .from{ display:block; margin-top:8px; font-size:0.95rem; opacity:0.75; }
+  @keyframes flutterIn{ from{ opacity:0; transform:translateY(-14px) rotate(0deg) scale(0.9); } to{ opacity:1; transform:translateY(0) rotate(var(--rot,0deg)) scale(1); } }
+  .cork-empty{ grid-column:1/-1; color:rgba(242,236,217,0.5); font-family:'Caveat', cursive; font-size:1.2rem; text-align:center; padding:20px; }
 
-  .cork-expand-card { border: 2px dashed rgba(242,236,217,0.4); background: rgba(255,255,255,0.05); border-radius: 4px; min-height: 95px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-family: 'Caveat', cursive; font-size: 1.15rem; text-align: center; color: var(--chalk); }
+  /* Corkboard Inside Expand Card */
+  .cork-expand-card{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    border:2px dashed rgba(242,236,217,0.35);
+    background:rgba(255,255,255,0.04);
+    border-radius:4px;
+    min-height:110px;
+    padding:12px;
+    cursor:pointer;
+    transition:background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+    text-align:center;
+  }
+  .cork-expand-card:hover{
+    background:rgba(230,176,76,0.12);
+    border-color:var(--gold);
+    transform:scale(1.02);
+  }
+  .cork-expand-card .expand-icon{
+    font-size:1.4rem;
+    color:var(--gold);
+    line-height:1;
+    margin-bottom:4px;
+  }
+  .cork-expand-card .expand-text{
+    font-family:'Caveat', cursive;
+    font-size:1.25rem;
+    color:var(--chalk);
+    line-height:1.2;
+  }
 
-  .closing { text-align: left; margin-top: 24px; padding-bottom: 24px; }
-  .closing p { font-size: clamp(0.95rem, 1.8vw, 1.12rem); }
-  .signature { margin-top: 8px; font-family: 'Caveat', cursive; font-size: 2rem; color: var(--gold); margin-bottom: 16px; }
-  .heart-svg path { fill: none; stroke: var(--pink); stroke-width: 4; }
+  .closing{ text-align:left; margin-top:60px; }
+  .closing p{ font-size:1.12rem; color:var(--chalk); max-width:56ch; opacity:0; transform:translateY(12px); }
+  .page-slide[data-page="closing"].active .closing p{ animation:riseIn 0.8s ease 0.1s forwards; }
+  .signature{ margin-top:24px; font-family:'Caveat', cursive; font-size:2.4rem; color:var(--gold); opacity:0; transform:translateY(12px); }
+  .page-slide[data-page="closing"].active .signature{ animation:riseIn 0.8s ease 0.5s forwards; }
+  .heart-svg path{ fill:none; stroke:var(--pink); stroke-width:4; stroke-linecap:round; stroke-dasharray:300; stroke-dashoffset:300; }
+  .heart-svg.drawn path{ animation:draw 1.4s ease-out 0.2s forwards; }
 
   @media (max-width:520px){ 
-    .page-inner{ padding: 24px 18px 90px; } 
-    .page-slide[data-page="closing"] .page-inner { padding-bottom: 140px; }
-    .music-btn{ left: 14px !important; bottom: 16px !important; width: 42px; height: 42px; }
-    .fullscreen-btn{ right: 14px !important; bottom: 16px !important; width: 42px; height: 42px; }
+    .page-inner{ padding:44px 0 90px; } 
+    .music-btn{ left:14px; bottom:18px; width:40px; height:40px; }
+    .fullscreen-btn{ right:14px; bottom:18px; width:40px; height:40px; }
   }
+  @media (prefers-reduced-motion: reduce){ *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;} }
 </style>
 </head>
 <body>
 
+<div class="dust" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
 <div class="book" id="book">
 
   <!-- 1: HERO -->
-  <section class="page-slide active" data-page="hero">
+  <section class="page-slide" data-page="hero">
     <div class="page-inner"><div class="wrap hero">
       <div class="mark">for every teacher who ever believed in me/us —</div>
       <h1><span>Thank You,</span><span class="two">Teachers.</span></h1>
-      <svg class="underline-svg" viewBox="0 0 420 24"><path d="M6 16 C 90 4, 180 22, 260 10 S 380 4, 414 14" /></svg>
+      <svg class="underline-svg" viewBox="0 0 420 24" xmlns="http://www.w3.org/2000/svg"><path d="M6 16 C 90 4, 180 22, 260 10 S 380 4, 414 14" /></svg>
       <p class="sub">A page from one of your students — the one who fidgeted in the back row, asked too many questions, who bunked your classes for dance practice sessions, who rarely attended school and remember more of what you taught than I ever let on.</p>
       <div class="byline">— made by Jigyasa</div>
       <div class="next-hint">tap Next to begin →</div>
@@ -310,7 +423,7 @@
       <h2>Little things We still remember</h2>
       <div class="moment-row"><span class="moment-num">1.</span><p>The mornings you taught us without our books because you already knew half the class had forgotten to bring theirs — again.</p></div>
       <div class="moment-row"><span class="moment-num">2.</span><p>The time you stayed back after the bell to explain the same problem a third way, like it was the first time you'd said it.</p></div>
-      <div class="moment-row"><span class="moment-num">3.</span><p>.the same jokes and punchlines you make every single year that isn't even that funny anymore.</p></div>
+      <div class="moment-row"><span class="moment-num">3.</span><p>The same jokes and punchlines you make every single year that isn't even that funny anymore.</p></div>
       <div class="moment-row"><span class="moment-num">4.</span><p>The way you said "try it, I'll wait" instead of just giving us the answer — and actually waited.</p></div>
     </div></div>
   </section>
@@ -344,7 +457,8 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our guidance & pillars</div>
       <div class="photo-frame wide pos-middle">
-        <img src="images/director-and-wife.jpeg" alt="Respected Director Sir and Ma'am" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/director-and-wife.jpg';}">
+        <img src="images/director-and-wife.jpeg" alt="Respected Director Sir and Ma'am" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/director-and-wife.jpg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/director-and-wife.jpeg</div>
       </div>
       <h2 class="teacher-name">Respected Director Sir and Ma'am</h2>
       <p class="teacher-line">Thank you for nurturing our institution with unwavering devotion, guiding us with warmth, and creating a supportive environment where every student feels inspired to dream bigger.</p>
@@ -356,7 +470,8 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our principal</div>
       <div class="photo-frame pos-top">
-        <img src="images/principal.jpeg" alt="Neel Kamal Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/principal.jpg';}">
+        <img src="images/principal.jpeg" alt="Neel Kamal Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/principal.jpg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/principal.jpeg</div>
       </div>
       <h2 class="teacher-name">Neel Kamal Sir</h2>
       <p class="teacher-line">Thank you for your disciplined guidance, your motivating presence across every challenge, and your constant belief in our ability to accomplish great things.</p>
@@ -368,7 +483,8 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our vice-principal</div>
       <div class="photo-frame pos-center">
-        <img src="images/vice-principal.jpeg" alt="Vishal Jaiswal Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/vice-principal.jpg';}">
+        <img src="images/vice-principal.jpeg" alt="Vishal Jaiswal Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/vice-principal.jpg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/vice-principal.jpeg</div>
       </div>
       <h2 class="teacher-name">Vishal Jaiswal Sir</h2>
       <p class="teacher-line">Thank you for managing everything behind the scenes with endless patience, keeping us grounded, and always greeting students with an open ear and sound advice.</p>
@@ -380,10 +496,11 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our class teacher</div>
       <div class="photo-frame pos-center">
-        <img src="images/shreya-mam.jpg" alt="Shreya Ma'am" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/shreya-mam.jpeg';}">
+        <img src="images/shreya-mam.jpg" alt="Shreya Ma'am" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/shreya-mam.jpeg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/shreya-mam.jpg</div>
       </div>
       <h2 class="teacher-name">Shreya Ma'am</h2>
-      <p class="teacher-line">Thankyou!❣️ for handling out classroom's endless chatters, sometimes even participating in our silly conversations. Thankyou for listening to us patiently and giving us endless advices and strength. Thankyou for being our best class teacher 🫶🏻💗.</p>
+      <p class="teacher-line">Thankyou!❣️ for handling out classroom's endless chatters, sometimes even participating in our silly conversations. Thankyou for listening to us patiently and  giving us endless advices and strength. Thankyou for being our best class teacher 🫶🏻💗.</p>
     </div></div>
   </section>
 
@@ -392,7 +509,8 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our biology teacher</div>
       <div class="photo-frame pos-center">
-        <img src="images/ranjeet-singh.jpg" alt="Ranjeet Singh Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/ranjeet-singh.jpeg';}">
+        <img src="images/ranjeet-singh.jpg" alt="Ranjeet Singh Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/ranjeet-singh.jpeg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/ranjeet-singh.jpg</div>
       </div>
       <h2 class="teacher-name">Ranjeet Singh Sir</h2>
       <p class="teacher-line">Thankyou for bringing every biology chapter to life with your infectious energy and amazing explanations which turns difficult topics into engaging discussions!</p>
@@ -404,7 +522,8 @@
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">our mentor & guide</div>
       <div class="photo-frame pos-center">
-        <img src="images/tarun-sir.jpg" alt="Tarun Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/tarun-sir.jpeg';}">
+        <img src="images/tarun-sir.jpg" alt="Tarun Sir" onerror="if(!this.dataset.fallback){this.dataset.fallback=1; this.src='images/tarun-sir.jpeg';}else{this.closest('.photo-frame').classList.add('missing');}">
+        <div class="placeholder-note">Add images/tarun-sir.jpg</div>
       </div>
       <h2 class="teacher-name">Tarun Sir</h2>
       <p class="teacher-line">Thankyou for your cool, chalant, and practical perspective, and for always making sure that learning extends beyond the classroom into the real world. Thankyou for making our history lessons interesting!</p>
@@ -432,14 +551,14 @@
       </div>
 
       <div class="closing">
-        <svg class="heart-svg" id="heartSvg" viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg" width="60" height="52"><path d="M40 62 C 8 40, 4 18, 20 8 C 32 1, 40 12, 40 18 C 40 12, 48 1, 60 8 C 76 18, 72 40, 40 62 Z"/></svg>
+        <svg class="heart-svg" id="heartSvg" viewBox="0 0 80 70" xmlns="http://www.w3.org/2000/svg" width="70" height="62"><path d="M40 62 C 8 40, 4 18, 20 8 C 32 1, 40 12, 40 18 C 40 12, 48 1, 60 8 C 76 18, 72 40, 40 62 Z"/></svg>
         <p>However today goes — a small gift, a card, a bit of noise in the hallway — the real thank-you is just this: I noticed. I'm paying attention, even when it doesn't look like it. And I'm better because you showed up, again and again.</p>
         <div class="signature">With gratitude, Jigyasa.</div>
       </div>
     </div></div>
   </section>
 
-  <!-- 13: NEW FINAL SLIDE (CAT DANCE MEME) -->
+  <!-- 13: CAT DANCE MEME -->
   <section class="page-slide teacher-page" data-page="bonusvideo">
     <div class="page-inner"><div class="wrap">
       <div class="teacher-eyebrow">one last thing...</div>
@@ -473,7 +592,7 @@
 
 <!-- Bottom-Right Fullscreen Button -->
 <button id="fsToggle" class="fullscreen-btn" aria-label="Toggle full screen" title="Full Screen">
-  <svg viewBox="0 0 24 24" width="22" height="22">
+  <svg viewBox="0 0 24 24">
     <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
   </svg>
 </button>
@@ -492,64 +611,120 @@ var firebaseConfig = {
 };
 
 (function(){
-  /* ---------------- Fast Hardware-Friendly Slide Engine ---------------- */
+  /* ---------------- Page Flip Engine (Original 3D) ---------------- */
+  var book = document.getElementById('book');
   var pages = Array.prototype.slice.call(document.querySelectorAll('.page-slide'));
   var total = pages.length;
   var current = 0;
+  var animating = false;
 
   var prevBtn = document.getElementById('prevBtn');
   var nextBtn = document.getElementById('nextBtn');
   var counter = document.getElementById('counter');
   var bonusVideo = document.getElementById('bonusCatVideo');
 
-  function showPage(index){
-    if (index < 0 || index >= total) return;
-    pages[current].classList.remove('active');
-    
-    // Auto handle video vs background music
-    if (pages[current].dataset.page === 'bonusvideo' && bonusVideo){
-      bonusVideo.pause();
-    }
+  function layoutStatic(){
+    pages.forEach(function(p, i){
+      if (i === current){
+        p.style.transform = 'rotateY(0deg)';
+        p.style.zIndex = 50;
+      } else if (i < current){
+        p.style.transform = 'rotateY(-170deg)';
+        p.style.zIndex = i;
+      } else {
+        p.style.transform = 'rotateY(0deg)';
+        p.style.zIndex = 50 - (i - current);
+      }
+    });
+  }
 
-    current = index;
-    pages[current].classList.add('active');
+  function updateCounter(){
     counter.textContent = String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
-    prevBtn.disabled = (current === 0);
-    nextBtn.disabled = (current === total - 1);
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === total - 1;
+  }
 
-    if (pages[current].dataset.page === 'bonusvideo' && bonusVideo){
+  function handlePageEnter(index){
+    var page = pages[index];
+    page.classList.add('active');
+    if (page.dataset.page === 'closing'){
+      var heart = document.getElementById('heartSvg');
+      if (heart) heart.classList.add('drawn');
+    }
+    if (page.dataset.page === 'bonusvideo' && bonusVideo){
       bonusVideo.currentTime = 0;
       bonusVideo.play().catch(function(){});
     }
   }
 
-  prevBtn.addEventListener('click', function(){ showPage(current - 1); });
-  nextBtn.addEventListener('click', function(){ showPage(current + 1); });
+  function flip(direction){
+    if (animating) return;
+    if (direction === 'next' && current >= total - 1) return;
+    if (direction === 'prev' && current <= 0) return;
+
+    var outgoingIndex = current;
+    var incomingIndex = direction === 'next' ? current + 1 : current - 1;
+    var outgoing = pages[outgoingIndex];
+    var incoming = pages[incomingIndex];
+
+    if (outgoing.dataset.page === 'bonusvideo' && bonusVideo){
+      bonusVideo.pause();
+    }
+
+    animating = true;
+    pages[outgoingIndex].classList.remove('active');
+
+    outgoing.style.zIndex = 999;
+    incoming.style.zIndex = 998;
+    outgoing.classList.add('turning');
+
+    requestAnimationFrame(function(){
+      outgoing.style.transform = direction === 'next' ? 'rotateY(-170deg)' : 'rotateY(170deg)';
+      incoming.style.transform = 'rotateY(0deg)';
+    });
+
+    current = incomingIndex;
+    updateCounter();
+
+    setTimeout(function(){ handlePageEnter(current); }, 320);
+
+    setTimeout(function(){
+      outgoing.classList.remove('turning');
+      layoutStatic();
+      animating = false;
+    }, 680);
+  }
+
+  prevBtn.addEventListener('click', function(){ flip('prev'); });
+  nextBtn.addEventListener('click', function(){ flip('next'); });
 
   document.addEventListener('keydown', function(e){
     var tag = e.target.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable) return;
-    if (['ArrowRight','ArrowDown',' '].indexOf(e.key) !== -1){ e.preventDefault(); showPage(current + 1); }
-    if (['ArrowLeft','ArrowUp'].indexOf(e.key) !== -1){ e.preventDefault(); showPage(current - 1); }
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target.isContentEditable){
+      return;
+    }
+
+    if (['ArrowRight','ArrowDown',' '].indexOf(e.key) !== -1){ e.preventDefault(); flip('next'); }
+    if (['ArrowLeft','ArrowUp'].indexOf(e.key) !== -1){ e.preventDefault(); flip('prev'); }
   });
 
   var touchStartX = 0;
-  document.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].clientX; }, { passive:true });
-  document.addEventListener('touchend', function(e){
+  book.addEventListener('touchstart', function(e){ touchStartX = e.changedTouches[0].clientX; }, { passive:true });
+  book.addEventListener('touchend', function(e){
     var dx = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(dx) > 60){ showPage(dx < 0 ? current + 1 : current - 1); }
+    if (Math.abs(dx) > 60){ flip(dx < 0 ? 'next' : 'prev'); }
   }, { passive:true });
 
-  showPage(0);
+  layoutStatic();
+  updateCounter();
+  handlePageEnter(0);
 
   /* ---------------- Fullscreen Cross-Platform Engine ---------------- */
   var fsBtn = document.getElementById('fsToggle');
   if (fsBtn){
-    fsBtn.addEventListener('click', function(e){
-      e.stopPropagation();
-      var doc = document;
+    fsBtn.addEventListener('click', function(){
       var docEl = document.documentElement;
-      var isFS = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+      var isFS = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
 
       if (!isFS) {
         if (docEl.requestFullscreen) {
@@ -562,14 +737,14 @@ var firebaseConfig = {
           docEl.msRequestFullscreen();
         }
       } else {
-        if (doc.exitFullscreen) {
-          doc.exitFullscreen();
-        } else if (doc.webkitExitFullscreen) {
-          doc.webkitExitFullscreen();
-        } else if (doc.mozCancelFullScreen) {
-          doc.mozCancelFullScreen();
-        } else if (doc.msExitFullscreen) {
-          doc.msExitFullscreen();
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
         }
       }
     });
@@ -645,6 +820,9 @@ var firebaseConfig = {
       var n = allNotes[i];
       var el = document.createElement('div');
       el.className = 'sticky ' + colors[i % colors.length];
+      var rot = (i % 2 === 0 ? -1 : 1) * (2 + (i % 3) * 1.5);
+      el.style.setProperty('--rot', rot + 'deg');
+      el.style.animationDelay = (i * 0.05) + 's';
       var textEl = document.createElement('div');
       textEl.textContent = n.text;
       var fromEl = document.createElement('span');
@@ -658,11 +836,18 @@ var firebaseConfig = {
     if (totalNotes > 3){
       var card = document.createElement('div');
       card.className = 'cork-expand-card';
-      card.textContent = !isExpanded ? ('+' + (totalNotes - 3) + ' more pins') : 'Show less';
+      if (!isExpanded){
+        var remaining = totalNotes - 3;
+        card.innerHTML = '<span class="expand-icon">＋</span><span class="expand-text">+' + remaining + ' more<br><small style="font-size:0.82rem; opacity:0.8;">Tap to see all</small></span>';
+      } else {
+        card.innerHTML = '<span class="expand-icon">▴</span><span class="expand-text">Show less</span>';
+      }
+
       card.addEventListener('click', function(){
         isExpanded = !isExpanded;
         renderNotes(dynamicNotes);
       });
+
       board.appendChild(card);
     }
   }
